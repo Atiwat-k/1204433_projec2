@@ -22,6 +22,7 @@ public static class MauiProgram
         // ลงทะเบียน StudentService เป็น Singleton
         builder.Services.AddSingleton<StudentService>();
         builder.Services.AddSingleton<CourseService>();
+       
         // ลงทะเบียน ViewModels
         builder.Services.AddTransient<LoginViewsModel>();
         builder.Services.AddTransient<ShowObjectsViewModel>();
@@ -35,7 +36,15 @@ public static class MauiProgram
         builder.Services.AddTransient<AddCoursesPage>();
         builder.Services.AddTransient<DeleteCoursesPage>();
 
+
+
+     
+        builder.Services.AddSingleton<HistoryService>();
+        builder.Services.AddTransient<HistoryViewModel>();
+        builder.Services.AddTransient<HistoryPage>();
+
         
+
         return builder.Build();
     }
 }

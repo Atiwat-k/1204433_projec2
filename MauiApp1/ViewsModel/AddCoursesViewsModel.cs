@@ -7,6 +7,7 @@ using MauiApp1.Model;
 using MauiApp1.Services;
 using MauiApp2.Model;
 using System.Linq;
+using System.Diagnostics;
 
 namespace MauiApp1.ViewModel;
 
@@ -23,8 +24,15 @@ public partial class AddCourseViewModel : ObservableObject
     [ObservableProperty]
     private string _searchText;
     
+    [ObservableProperty]
+    private bool _isLoading;
+    
+    [ObservableProperty]
+    private string _statusMessage;
+    
     public ICommand AddCourseCommand { get; private set; }
     public ICommand ShowAllCoursesCommand { get; private set; }
+    public ICommand EnrollCourseCommand { get; private set; }
     public int UserId { get; set; }
 
     public AddCourseViewModel(CourseService courseService)
@@ -32,6 +40,7 @@ public partial class AddCourseViewModel : ObservableObject
         _courseService = courseService;
         AddCourseCommand = new Command(async () => await ExecuteAddCourseCommand());
         ShowAllCoursesCommand = new RelayCommand(ExecuteShowAllCoursesCommand);
+        EnrollCourseCommand = new RelayCommand<Courses>(async (course) => await ExecuteEnrollCourseCommand(course));
         
         _ = LoadCoursesAsync();
     }
@@ -75,19 +84,72 @@ public partial class AddCourseViewModel : ObservableObject
         }
     }
 
+   private async Task ExecuteEnrollCourseCommand(Courses course)
+{
+    if (UserId <= 0)
+    {
+        StatusMessage = "กรุณาเข้าสู่ระบบก่อนลงทะเบียน";
+        return;
+    }
+
+    IsLoading = true;
+    StatusMessage = "กำลังดำเนินการ...";
+    
+    try
+    {
+        var success = await _courseService.EnrollCourseAsync(UserId.ToString(), course.CourseId);
+        
+        if (success)
+        {
+            StatusMessage = $"ลงทะเบียนวิชา {course.CourseName} สำเร็จ";
+            // โหลดข้อมูลใหม่หลังจากลงทะเบียนสำเร็จ
+            await LoadCoursesAsync();
+        }
+        else
+        {
+            StatusMessage = $"คุณได้ลงทะเบียนวิชา {course.CourseName} ไว้แล้ว";
+        }
+    }
+    catch (Exception ex)
+    {
+        StatusMessage = $"เกิดข้อผิดพลาด: {ex.Message}";
+        Debug.WriteLine($"Error enrolling course: {ex}");
+    }
+    finally
+    {
+        IsLoading = false;
+        await Task.Delay(3000);
+        StatusMessage = string.Empty;
+    }
+}
+
     private async Task LoadCoursesAsync()
     {
-        var courses = await _courseService.LoadCoursesAsync();
-        if (courses != null)
+        IsLoading = true;
+        try
         {
-            CourseList.Clear();
-            foreach (var course in courses)
+            var courses = await _courseService.LoadCoursesAsync();
+            if (courses != null)
             {
-                CourseList.Add(course);
+                CourseList.Clear();
+                foreach (var course in courses)
+                {
+                    CourseList.Add(course);
+                }
+                
+                FilteredCourseList = new ObservableCollection<Courses>(CourseList);
             }
-            
-            // Initialize filtered list with all courses
-            FilteredCourseList = new ObservableCollection<Courses>(CourseList);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Error loading courses: {ex}");
+            StatusMessage = "ไม่สามารถโหลดข้อมูลวิชาได้";
+            await Task.Delay(3000);
+            StatusMessage = string.Empty;
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 }

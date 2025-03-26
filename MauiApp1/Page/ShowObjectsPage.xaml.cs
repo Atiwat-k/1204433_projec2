@@ -1,9 +1,10 @@
 using System.Diagnostics;
+using MauiApp1.Services;
 using MauiApp1.ViewModel;
 
 namespace MauiApp1.Page
 {
-    [QueryProperty(nameof(UserId), "userId")]  // รับ parameter ชื่อ "userId"
+    [QueryProperty(nameof(UserId), "userId")]
     public partial class ShowObjectsPage : ContentPage
     {
         private ShowObjectsViewModel ViewModel;
@@ -15,7 +16,6 @@ namespace MauiApp1.Page
             BindingContext = ViewModel;
         }
 
-        // Property สำหรับรับ userId
         private string _userId;
         public string UserId
         {
@@ -23,25 +23,33 @@ namespace MauiApp1.Page
             set
             {
                 _userId = value;
-                OnUserIdReceived(value);  // เรียกเมธอดเมื่อรับค่า userId
+                OnUserIdReceived(value);
             }
         }
 
-        // เมธอดที่เรียกเมื่อรับค่า userId
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                Debug.WriteLine("Page appearing - reloading data");
+                await ViewModel.RefreshData();
+            }
+        }
+
         private async void OnUserIdReceived(string userId)
         {
             if (!string.IsNullOrEmpty(userId))
             {
                 Debug.WriteLine($"Received User ID: {userId}");
-                ViewModel.UserId = userId;  // ตั้งค่า UserId ใน ViewModel
-                await ViewModel.LoadDataAsync();  // โหลดข้อมูลใหม่
+                ViewModel.UserId = userId;
+                await ViewModel.LoadDataAsync();
             }
             else
             {
                 Debug.WriteLine("UserId is null or empty.");
             }
         }
-
 
         private async void OnButtonClicked(object sender, EventArgs e)
         {
@@ -57,7 +65,7 @@ namespace MauiApp1.Page
 
         private async void deletecoursesButtonClicked(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(UserId.ToString()))
+            if (!string.IsNullOrEmpty(UserId))
             {
                 await Shell.Current.GoToAsync($"{nameof(DeleteCoursesPage)}?userId={UserId}");
             }
@@ -67,6 +75,12 @@ namespace MauiApp1.Page
             }
         }
 
-
+        private async void OnViewHistoryClicked(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                await Shell.Current.GoToAsync($"{nameof(HistoryPage)}?userId={UserId}");
+            }
+        }
     }
 }

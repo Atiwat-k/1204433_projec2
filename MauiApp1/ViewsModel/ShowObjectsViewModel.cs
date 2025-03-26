@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -10,7 +11,7 @@ namespace MauiApp1.ViewModel
     public partial class ShowObjectsViewModel : ObservableObject
     {
         private readonly StudentService _studentService;
-        private readonly CourseService _courseService; // New service to load course details
+        private readonly CourseService _courseService;
 
         [ObservableProperty]
         private ObservableCollection<Term> allTerms = new();
@@ -27,59 +28,90 @@ namespace MauiApp1.ViewModel
         [ObservableProperty]
         private Profile studentProfile;
 
+        [ObservableProperty]
+        private bool isLoading;
+
         public ShowObjectsViewModel(StudentService studentService, CourseService courseService)
         {
             _studentService = studentService;
-            _courseService = courseService; // Initialize CourseService
+            _courseService = courseService;
         }
 
+        [RelayCommand]
         public async Task LoadDataAsync()
         {
-            var student = await _studentService.GetStudentByIdAsync(UserId);
-            if (student != null)
+            IsLoading = true;
+            try
             {
-                StudentProfile = student.Profile;
-
-                // Collect all terms (current and previous)
+                // Clear existing data
                 AllTerms.Clear();
-                AllTerms.Add(student.CurrentTerm);
-                foreach (var term in student.PreviousTerms)
+                DisplayedCourses.Clear();
+                
+                var student = await _studentService.GetStudentByIdAsync(UserId);
+                if (student != null)
                 {
-                    AllTerms.Add(term);
-                }
+                    StudentProfile = student.Profile;
 
-                // Set default to current term
-                SelectedTerm = student.CurrentTerm;
-                UpdateDisplayedCourses();
+                    // Collect all terms (current and previous)
+                    AllTerms.Add(student.CurrentTerm);
+                    foreach (var term in student.PreviousTerms)
+                    {
+                        AllTerms.Add(term);
+                    }
+
+                    // Set default to current term
+                    SelectedTerm = student.CurrentTerm;
+                    await UpdateDisplayedCourses();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading data: {ex.Message}");
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
         partial void OnSelectedTermChanged(Term value)
         {
-            UpdateDisplayedCourses();
+            _ = UpdateDisplayedCourses();
         }
 
-        private async void UpdateDisplayedCourses()
+        private async Task UpdateDisplayedCourses()
         {
             if (SelectedTerm != null)
             {
-                var courses = new ObservableCollection<EnrolledCourse>();
-                var courseList = await _courseService.LoadCoursesAsync(); // Get all courses
-
-                foreach (var courseId in SelectedTerm.EnrolledCourses)
+                try
                 {
-                    var course = courseList.FirstOrDefault(c => c.CourseId == courseId);
-                    if (course != null)
+                    IsLoading = true;
+                    var courses = new ObservableCollection<EnrolledCourse>();
+                    var courseList = await _courseService.LoadCoursesAsync();
+
+                    foreach (var courseId in SelectedTerm.EnrolledCourses)
                     {
-                        courses.Add(new EnrolledCourse
+                        var course = courseList.FirstOrDefault(c => c.CourseId == courseId);
+                        if (course != null)
                         {
-                            CourseId = course.CourseId,
-                            CourseName = course.CourseName,
-                            Credits = (int)course.Credits
-                        });
+                            courses.Add(new EnrolledCourse
+                            {
+                                CourseId = course.CourseId,
+                                CourseName = course.CourseName,
+                                Credits = (int)course.Credits
+                            });
+                        }
                     }
+                    DisplayedCourses = courses;
                 }
-                DisplayedCourses = courses;
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error updating courses: {ex.Message}");
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
             }
         }
 
@@ -88,6 +120,11 @@ namespace MauiApp1.ViewModel
         {
             SelectedTerm = term;
         }
+
+        [RelayCommand]
+        public async Task RefreshData()
+        {
+            await LoadDataAsync();
+        }
     }
-    
 }

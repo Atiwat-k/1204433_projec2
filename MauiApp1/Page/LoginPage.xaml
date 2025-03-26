@@ -60,12 +60,12 @@
                                                                               CommandParameter="register"></TapGestureRecognizer>
                                                  </Label.GestureRecognizers>
                                           </Label>
-                                          <Label Text="Forget Password"
+                                          <!-- <Label Text="Forget Password"
                                                  TextColor="Black ">
                                                  <Label.GestureRecognizers>
                                                         <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"></TapGestureRecognizer>
                                                  </Label.GestureRecognizers>
-                                          </Label>
+                                          </Label> -->
                                    </FlexLayout>
 
 

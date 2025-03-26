@@ -53,11 +53,11 @@ build_metadata.AdditionalFiles.ManifestResourceName = MauiApp1.Page.DeleteCourse
 build_metadata.AdditionalFiles.TargetPath = Page\DeleteCoursesPage.xaml
 build_metadata.AdditionalFiles.RelativePath = Page\DeleteCoursesPage.xaml
 
-[D:/1204433_projec2/MauiApp1/Page/ForgetPasswordPage.xaml]
+[D:/1204433_projec2/MauiApp1/Page/HistoryPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml
-build_metadata.AdditionalFiles.ManifestResourceName = MauiApp1.Page.ForgetPasswordPage.xaml
-build_metadata.AdditionalFiles.TargetPath = Page\ForgetPasswordPage.xaml
-build_metadata.AdditionalFiles.RelativePath = Page\ForgetPasswordPage.xaml
+build_metadata.AdditionalFiles.ManifestResourceName = MauiApp1.Page.HistoryPage.xaml
+build_metadata.AdditionalFiles.TargetPath = Page\HistoryPage.xaml
+build_metadata.AdditionalFiles.RelativePath = Page\HistoryPage.xaml
 
 [D:/1204433_projec2/MauiApp1/Page/LoginPage.xaml]
 build_metadata.AdditionalFiles.GenKind = Xaml

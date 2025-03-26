@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MauiApp1.Page.AddCoursesPage"
+             xmlns:viewmodel="clr-namespace:MauiApp1.ViewModel"
+		xmlns:model="clr-namespace:MauiApp2.Model"
+			 x:Class="MauiApp1.Page.AddCoursesPage"
+             x:DataType="viewmodel:AddCourseViewModel"
              Title="Add Courses"
              BackgroundColor="#F4F6F9">
 
@@ -19,11 +22,26 @@
                    HorizontalOptions="FillAndExpand"
                    VerticalOptions="CenterAndExpand" />
 
+        <!-- Loading Indicator -->
+        <ActivityIndicator IsRunning="{Binding IsLoading}" 
+                          IsVisible="{Binding IsLoading}"
+                          HorizontalOptions="Center"
+                          Color="#3498DB" />
+
+        <!-- Status Message -->
+        <Label Text="{Binding StatusMessage}"
+               FontSize="14"
+               TextColor="#E74C3C"
+               HorizontalOptions="Center"
+               Margin="0,10,0,0" />
+
         <!-- Course List -->
         <ScrollView>
-            <CollectionView ItemsSource="{Binding FilteredCourseList}" HeightRequest="500">
+            <CollectionView ItemsSource="{Binding FilteredCourseList}" 
+                           HeightRequest="500"
+                           x:DataType="viewmodel:AddCourseViewModel">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="model:Courses">
                         <Frame Padding="15"
                                Margin="5"
                                BorderColor="#BDC3C7"
@@ -56,7 +74,8 @@
                                         CornerRadius="20"
                                         VerticalOptions="Center"
                                         HorizontalOptions="End"
-                                        Command="{Binding AddCourseCommand}" 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:AddCourseViewModel}}, Path=EnrollCourseCommand}"
+                                        CommandParameter="{Binding .}"
                                         Grid.Column="1" />
                             </Grid>
                         </Frame>
@@ -64,6 +83,5 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </ScrollView>
-
     </VerticalStackLayout>
 </ContentPage>
