@@ -1,114 +1,142 @@
-using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using MauiApp1.Model;
-using MauiApp2.Model;
 using MauiApp1.Services;
+using MauiApp2.Model;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
+using System.Diagnostics;
 
-public class DeleteCoursesViewModel : INotifyPropertyChanged
+namespace MauiApp1.ViewModel
 {
-    private readonly StudentService _studentService;
-    private readonly CourseService _courseService;
-    private Student _student;
-    private ObservableCollection<EnrolledCourse> _enrolledCourses;
-    
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    public string UserId { get; set; }
-
-    protected virtual void OnPropertyChanged(string propertyName = null)
+    public partial class DeleteCoursesViewModel : ObservableObject
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
+        private readonly StudentService _studentService;
+        private readonly CourseService _courseService;
 
-    public Student Student
-    {
-        get => _student;
-        set
+        [ObservableProperty]
+        private Profile _studentProfile;
+
+        [ObservableProperty]
+        private Term _currentTerm;
+
+        [ObservableProperty]
+        private ObservableCollection<EnrolledCourse> _enrolledCourses = new();
+
+        [ObservableProperty]
+        private bool _isLoading;
+
+        [ObservableProperty]
+        private string _statusMessage;
+
+        [ObservableProperty]
+        private string _userId; // เพิ่ม property เก็บ studentId
+
+        public DeleteCoursesViewModel(StudentService studentService, CourseService courseService)
         {
-            _student = value;
-            OnPropertyChanged(nameof(Student));
-            OnPropertyChanged(nameof(StudentProfile));
-            OnPropertyChanged(nameof(CurrentTerm));
-            Debug.WriteLine($"Student set: {value?.Id}");
+            _studentService = studentService;
+            _courseService = courseService;
         }
-    }
 
-    public Profile StudentProfile => Student?.Profile;
-    public Term CurrentTerm => Student?.CurrentTerm;
-
-    public ObservableCollection<EnrolledCourse> EnrolledCourses
-    {
-        get => _enrolledCourses;
-        set
+        [RelayCommand]
+        public async Task LoadDataAsync(string studentId)
         {
-            _enrolledCourses = value;
-            OnPropertyChanged(nameof(EnrolledCourses));
-        }
-    }
-
-    public DeleteCoursesViewModel(StudentService studentService, CourseService courseService)
-    {
-        _studentService = studentService;
-        _courseService = courseService;
-        EnrolledCourses = new ObservableCollection<EnrolledCourse>();
-    }
-
-    public async Task LoadDataAsync(string userId)
-    {
-        Debug.WriteLine($"Loading data for user: {userId}");
-        
-        try
-        {
-            var student = await _studentService.GetStudentByIdAsync(userId);
-            if (student != null)
+            UserId = studentId; // เก็บ studentId ไว้ใช้ใน ViewModel
+            IsLoading = true;
+            try
             {
-                Student = student;
-                await LoadEnrolledCoursesDetails();
-            }
-            else
-            {
-                Debug.WriteLine("Student not found");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Error loading data: {ex.Message}");
-        }
-    }
-
-    private async Task LoadEnrolledCoursesDetails()
-    {
-        if (CurrentTerm?.EnrolledCourses == null || !CurrentTerm.EnrolledCourses.Any())
-        {
-            Debug.WriteLine("No enrolled courses");
-            EnrolledCourses.Clear();
-            return;
-        }
-
-        try
-        {
-            var allCourses = await _courseService.LoadCoursesAsync();
-            var enrolledCoursesDetails = new ObservableCollection<EnrolledCourse>();
-
-            foreach (var courseId in CurrentTerm.EnrolledCourses)
-            {
-                var course = allCourses.FirstOrDefault(c => c.CourseId == courseId);
-                enrolledCoursesDetails.Add(new EnrolledCourse
+                var student = await _studentService.GetStudentByIdAsync(studentId);
+                if (student != null)
                 {
-                    CourseId = courseId,
-                    CourseName = course?.CourseName ?? "Unknown Course",
-                    Credits = (int)(course?.Credits ?? 0)
-                });
+                    StudentProfile = student.Profile;
+                    CurrentTerm = student.CurrentTerm;
+                    await LoadEnrolledCourses(student.CurrentTerm.EnrolledCourses);
+                }
             }
-
-            EnrolledCourses = enrolledCoursesDetails;
-            Debug.WriteLine($"Loaded {EnrolledCourses.Count} enrolled courses");
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading data: {ex.Message}");
+                StatusMessage = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
-        catch (Exception ex)
+
+        private async Task LoadEnrolledCourses(List<string> courseIds)
         {
-            Debug.WriteLine($"Error loading course details: {ex.Message}");
+            try
+            {
+                var courses = await _courseService.LoadCoursesAsync();
+                var enrolled = new ObservableCollection<EnrolledCourse>();
+
+                foreach (var courseId in courseIds)
+                {
+                    var course = courses.FirstOrDefault(c => c.CourseId == courseId);
+                    if (course != null)
+                    {
+                        enrolled.Add(new EnrolledCourse
+                        {
+                            CourseId = course.CourseId,
+                            CourseName = course.CourseName,
+                            Credits = (int)course.Credits
+                        });
+                    }
+                }
+
+                EnrolledCourses = enrolled;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error loading enrolled courses: {ex.Message}");
+                throw;
+            }
+        }
+
+       [RelayCommand]
+public async Task DropCourse(string courseId)
+{
+    if (string.IsNullOrEmpty(UserId))
+    {
+        StatusMessage = "ไม่พบรหัสนักศึกษา";
+        return;
+    }
+
+    IsLoading = true;
+    StatusMessage = "กำลังดำเนินการถอนวิชา...";
+    
+    try
+    {
+        var success = await _courseService.DropCourseAsync(UserId, courseId);
+
+        if (success)
+        {
+            StatusMessage = "ถอนวิชาสำเร็จ";
+            
+            // โหลดข้อมูลใหม่หลังถอนวิชา
+            await LoadDataAsync(UserId);
+            
+            // แจ้งเตือนให้หน้าอื่นรู้ว่ามีการเปลี่ยนแปลง
+            MessagingCenter.Send(this, "CoursesUpdated");
+            
+            // กลับไปหน้าก่อนหน้า (ShowObjectsPage)
+            await Shell.Current.GoToAsync("..");
+        }
+        else
+        {
+            StatusMessage = "ถอนวิชาไม่สำเร็จ";
         }
     }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error dropping course: {ex.Message}");
+        StatusMessage = "เกิดข้อผิดพลาดในการถอนวิชา";
+    }
+    finally
+    {
+        IsLoading = false;
+        await Task.Delay(3000);
+        StatusMessage = string.Empty;
+    }
+}}
 }

@@ -22,11 +22,12 @@ namespace MauiApp1.Page
             }
         }
 
+
         public DeleteCoursesPage()
         {
             InitializeComponent();
             _viewModel = new DeleteCoursesViewModel(
-                new StudentService(), 
+                new StudentService(),
                 new CourseService());
             BindingContext = _viewModel;
         }
@@ -34,11 +35,21 @@ namespace MauiApp1.Page
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            Debug.WriteLine("Page appearing");
-            if (!string.IsNullOrEmpty(UserId))
+
+            // สมัครรับการแจ้งเตือนเมื่อมีการอัปเดตวิชา
+            MessagingCenter.Subscribe<DeleteCoursesViewModel>(this, "CoursesUpdated", async (sender) =>
             {
-                LoadData();
-            }
+                if (!string.IsNullOrEmpty(UserId))
+                {
+                    await _viewModel.LoadDataAsync(UserId);
+                }
+            });
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            MessagingCenter.Unsubscribe<DeleteCoursesViewModel>(this, "CoursesUpdated");
         }
 
         private async void LoadData()
@@ -47,7 +58,7 @@ namespace MauiApp1.Page
             if (!string.IsNullOrEmpty(UserId))
             {
                 await _viewModel.LoadDataAsync(UserId);
-                
+
                 // Debug output
                 Debug.WriteLine($"Student Name: {_viewModel.StudentProfile?.Name}");
                 Debug.WriteLine($"Term: {_viewModel.CurrentTerm?.TermTerm}");

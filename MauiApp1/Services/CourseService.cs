@@ -142,5 +142,43 @@ public async Task<bool> EnrollCourseAsync(string studentId, string courseId)
                 throw;
             }
         }
+        public async Task<bool> DropCourseAsync(string studentId, string courseId)
+{
+    try
+    {
+        var students = await LoadStudentsAsync();
+        var student = students.FirstOrDefault(s => s.Id == studentId);
+        
+        if (student == null)
+        {
+            Debug.WriteLine($"Student not found: {studentId}");
+            return false;
+        }
+
+        // ตรวจสอบว่ามีวิชานี้ในรายการหรือไม่
+        if (!student.CurrentTerm.EnrolledCourses.Contains(courseId))
+        {
+            Debug.WriteLine($"Course {courseId} not found in student's enrolled courses");
+            return false;
+        }
+
+        // ถอนวิชา
+        student.CurrentTerm.EnrolledCourses.Remove(courseId);
+
+        // บันทึกข้อมูลนักเรียนที่อัปเดต
+        await SaveStudentsAsync(students);
+
+        // บันทึกประวัติการถอนวิชา
+        await TrackEnrollment(studentId, courseId, "ถอนวิชา");
+        
+        return true;
     }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"Error dropping course: {ex.Message}");
+        return false;
+    }
+}
+    }
+    
 }

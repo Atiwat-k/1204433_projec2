@@ -33,7 +33,7 @@ namespace MauiApp1.Page
             if (!string.IsNullOrEmpty(UserId))
             {
                 Debug.WriteLine("Page appearing - reloading data");
-                await ViewModel.RefreshData();
+                await ViewModel.LoadDataAsync();
             }
         }
 
@@ -74,13 +74,17 @@ namespace MauiApp1.Page
                 Debug.WriteLine("UserId is null or empty. Cannot navigate.");
             }
         }
-
-        private async void OnViewHistoryClicked(object sender, EventArgs e)
-        {
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                await Shell.Current.GoToAsync($"{nameof(HistoryPage)}?userId={UserId}");
-            }
-        }
+      private async void OnViewHistoryClicked(object sender, EventArgs e)
+{
+    if (!string.IsNullOrEmpty(UserId))
+    {
+        await Navigation.PushAsync(new HistoryPage(new HistoryViewModel(new HistoryService())) 
+        { 
+            UserId = UserId 
+        });
     }
+}
+    }
+
+
 }

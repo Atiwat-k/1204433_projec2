@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:MauiApp1.ViewModel"
              x:Class="MauiApp1.Page.DeleteCoursesPage"
              Title="Delete Courses"
              BackgroundColor="#F4F6F9">
 
-    <ScrollView> <!-- Main scroll view for the entire page -->
+    <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
             <!-- Student Profile Section -->
             <Frame Padding="15"
@@ -65,7 +66,6 @@
                    TextColor="#2C3E50"
                    HorizontalOptions="Center" />
 
-            <!-- Nested ScrollView for the course list only -->
             <Frame Padding="0"
                    BackgroundColor="Transparent"
                    HasShadow="False">
@@ -106,7 +106,8 @@
                                             CornerRadius="20"
                                             VerticalOptions="Center"
                                             HorizontalOptions="End"
-                                            
+                                            Command="{Binding Path=BindingContext.DropCourseCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
+                                            CommandParameter="{Binding CourseId}"
                                             Grid.Column="1" />
                                 </Grid>
                             </Frame>

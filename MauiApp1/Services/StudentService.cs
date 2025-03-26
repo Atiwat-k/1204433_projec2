@@ -13,32 +13,29 @@ namespace MauiApp1.Services
         private readonly string _studentsFileName = "students.json";
         private List<Student> _students;
 
-        public async Task<List<Student>> LoadStudentsAsync()
+        public async Task<List<Student>> LoadStudentsAsync(bool forceReload = false)
         {
-            if (_students != null)
+            if (!forceReload && _students != null)
             {
                 return _students;
             }
 
             try
             {
-                // ตรวจสอบว่ามีไฟล์ใน AppData หรือไม่
                 var appDataPath = Path.Combine(FileSystem.AppDataDirectory, _studentsFileName);
-                
+
                 if (!File.Exists(appDataPath))
                 {
-                    // ถ้าไม่มี ให้คัดลอกจากไฟล์ใน Resources
                     using var stream = await FileSystem.OpenAppPackageFileAsync(_studentsFileName);
                     using var reader = new StreamReader(stream);
                     var jsonData = await reader.ReadToEndAsync();
-                    
+
                     if (!string.IsNullOrEmpty(jsonData))
                     {
                         await File.WriteAllTextAsync(appDataPath, jsonData);
                     }
                 }
 
-                // อ่านข้อมูลจาก AppData
                 var json = await File.ReadAllTextAsync(appDataPath);
                 _students = JsonConvert.DeserializeObject<List<Student>>(json) ?? new List<Student>();
                 return _students;
@@ -49,10 +46,9 @@ namespace MauiApp1.Services
                 return new List<Student>();
             }
         }
-
-        public async Task<Student> GetStudentByIdAsync(string id)
+        public async Task<Student> GetStudentByIdAsync(string id, bool forceReload = false)
         {
-            var students = await LoadStudentsAsync();
+            var students = await LoadStudentsAsync(forceReload);
             return students.FirstOrDefault(s => s.Id == id);
         }
 
@@ -73,7 +69,7 @@ namespace MauiApp1.Services
         {
             var students = await LoadStudentsAsync();
             var existingStudent = students.FirstOrDefault(s => s.Id == updatedStudent.Id);
-            
+
             if (existingStudent == null)
             {
                 return false;
@@ -91,38 +87,45 @@ namespace MauiApp1.Services
 
         public async Task<bool> EnrollCourseAsync(string studentId, string courseId)
         {
-            var students = await LoadStudentsAsync();
+            var students = await LoadStudentsAsync(true);
             var student = students.FirstOrDefault(s => s.Id == studentId);
-            
-            if (student == null)
+
+            if (student == null || student.CurrentTerm.EnrolledCourses.Contains(courseId))
             {
                 return false;
             }
 
-            // ตรวจสอบว่าวิชานี้เคยลงทะเบียนแล้วหรือไม่
-            if (student.CurrentTerm.EnrolledCourses.Contains(courseId))
-            {
-                return false;
-            }
-
-            // เพิ่มวิชาลงใน enrolled_courses
             student.CurrentTerm.EnrolledCourses.Add(courseId);
-            return await SaveStudentsAsync(students);
-        }
+            var result = await SaveStudentsAsync(students);
 
+            if (result)
+            {
+                _students = students;
+                await GetStudentByIdAsync(studentId, true); // บังคับโหลดข้อมูลใหม่
+            }
+
+            return result;
+        }
         public async Task<bool> DropCourseAsync(string studentId, string courseId)
         {
-            var students = await LoadStudentsAsync();
+            var students = await LoadStudentsAsync(true);
             var student = students.FirstOrDefault(s => s.Id == studentId);
-            
+
             if (student == null)
             {
                 return false;
             }
 
-            // ลบวิชาออกจาก enrolled_courses
-            return student.CurrentTerm.EnrolledCourses.Remove(courseId) && 
-                   await SaveStudentsAsync(students);
+            var removed = student.CurrentTerm.EnrolledCourses.Remove(courseId);
+            var result = removed && await SaveStudentsAsync(students);
+
+            if (result)
+            {
+                _students = students;
+                await GetStudentByIdAsync(studentId, true); // บังคับโหลดข้อมูลใหม่
+            }
+
+            return result;
         }
 
         private async Task<bool> SaveStudentsAsync(List<Student> students)
@@ -132,10 +135,9 @@ namespace MauiApp1.Services
                 var json = JsonConvert.SerializeObject(students, Formatting.Indented);
                 var filePath = Path.Combine(FileSystem.AppDataDirectory, _studentsFileName);
                 await File.WriteAllTextAsync(filePath, json);
-                
-                // อัปเดต cache
-                _students = students;
-                
+
+                _students = await LoadStudentsAsync(true); // บังคับโหลดใหม่จากไฟล์
+
                 return true;
             }
             catch (Exception ex)

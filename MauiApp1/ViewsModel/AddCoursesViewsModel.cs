@@ -84,7 +84,7 @@ public partial class AddCourseViewModel : ObservableObject
         }
     }
 
-   private async Task ExecuteEnrollCourseCommand(Courses course)
+ private async Task ExecuteEnrollCourseCommand(Courses course)
 {
     if (UserId <= 0)
     {
@@ -102,8 +102,9 @@ public partial class AddCourseViewModel : ObservableObject
         if (success)
         {
             StatusMessage = $"ลงทะเบียนวิชา {course.CourseName} สำเร็จ";
-            // โหลดข้อมูลใหม่หลังจากลงทะเบียนสำเร็จ
-            await LoadCoursesAsync();
+            
+            // กลับไปหน้าก่อนหน้าและส่งพารามิเตอร์ให้รีเฟรช
+            await Shell.Current.GoToAsync($"..?refresh=true&userId={UserId}");
         }
         else
         {

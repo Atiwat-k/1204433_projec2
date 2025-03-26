@@ -16,6 +16,7 @@ namespace MauiApp1.Page
             }
         }
 
+
         public AddCoursesPage()
         {
             InitializeComponent();
