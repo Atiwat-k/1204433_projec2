@@ -1,0 +1,60 @@
+[
+  {
+    "id": "12345",
+    "email": "A",
+    "password": "1",
+    "profile": {
+      "name": "John Doe",
+      "major": "Computer Science",
+      "faculty": "Engineering",
+      "year": 3
+    },
+    "current_term": {
+      "term": "2/2568",
+      "enrolled_courses": ["CS101", "MATH101","STAT101"]
+    },
+    "previous_terms": [
+      {
+        "term": "1/2568",
+        "enrolled_courses": ["PHYS101"]
+      },
+      {
+        "term": "2/2567",
+        "enrolled_courses": ["CHEM101"]
+      },
+      {
+        "term": "1/2567",
+        "enrolled_courses": ["CHEM101"]
+      }
+    ]
+  },
+  {
+    "id": "67890",
+    "email": "student2@example.com",
+    "password": "password456",
+    "profile": {
+      "name": "Jane Smith",
+      "major": "Mathematics",
+      "faculty": "Science",
+      "year": 2
+    },
+    "current_term": {
+      "term": "2/2568",
+      "enrolled_courses": ["MATH201"]
+    },
+    "previous_terms": [
+      {
+        "term": "1/2568",
+        "enrolled_courses": ["STAT101"]
+      },
+      {
+        "term": "2/2567",
+        "enrolled_courses": ["STAT101"]
+      },
+      {
+        "term": "1/2567",
+        "enrolled_courses": ["STAT101"]
+      }
+    ]
+  }
+]

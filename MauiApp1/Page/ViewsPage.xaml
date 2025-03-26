@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.Page.ViewsPage"
+             Title="ViewsPage">
+             
+    <ScrollView>
+    <VerticalStackLayout VerticalOptions="Center">
+        <!-- ข้อความแสดงผล -->
+        <Label Text="Hello World!!!"
+               TextColor="Red"
+               FontAttributes="Bold"
+               FontSize="Large"
+               HorizontalTextAlignment="Center" />
+        
+        <!-- กรอบพร้อมภาพ -->
+        <Border WidthRequest="300"
+                StrokeShape="RoundRectangle 40,0,0,40"
+                Padding="50">
+            <Image Source="maui_disney.png" />
+        </Border>
+            <Button Text="Click Me!"
+                WidthRequest="200"
+                BackgroundColor="PowderBlue"
+                Clicked="Button_Clicked"
+                ImageSource="icons8_camera_50.png"
+                ContentLayout="Left,10"
+                HeightRequest="30"
+                Padding="5">
+
+        </Button>
+          <ImageButton Source="icons8_camera_50.png"
+             WidthRequest="40"
+             HeightRequest="10"
+            
+             Clicked="ImageButton_Clicked" />
+     <Entry  FontSize="16"
+		WidthRequest="250"
+		HorizontalTextAlignment="Center"></Entry>
+
+<Entry  FontSize="16"
+		IsPassword="True"
+		WidthRequest="250"
+		HorizontalTextAlignment="Center"></Entry>
+         <Border HeightRequest="250"
+                    WidthRequest="400">
+                <Editor></Editor>
+            </Border>
+    </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

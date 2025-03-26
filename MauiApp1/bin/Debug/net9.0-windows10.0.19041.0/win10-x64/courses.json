@@ -1,0 +1,38 @@
+[
+  {
+    "course_id": "CS101",
+    "course_name": "Introduction to Computer Science",
+    "credits": 3
+  },
+  {
+    "course_id": "MATH101",
+    "course_name": "Calculus I",
+    "credits": 4
+  },
+  {
+    "course_id": "PHYS101",
+    "course_name": "Physics I",
+    "credits": 3
+  },
+  {
+    "course_id": "CHEM101",
+    "course_name": "Chemistry I",
+    "credits": 3
+  },
+  {
+    "course_id": "MATH201",
+    "course_name": "Linear Algebra",
+    "credits": 3
+  },
+  {
+    "course_id": "STAT101",
+    "course_name": "Statistics",
+    "credits": 3
+  }
+  ,
+  {
+    "course_id": "x",
+    "course_name": "xxxxxxx",
+    "credits": 3
+  }
+]
