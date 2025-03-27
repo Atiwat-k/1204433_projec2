@@ -45,7 +45,7 @@
 		<MauiImage Include="Resources\Images\*" />
 		<!-- <MauiImage Include="Resources\Images\Pictures\*" /> -->
 		<MauiImage Include="Resources/Images/Pictures/maui_disney.png" />
-		<MauiImage Include="Resources/Images/Pictures/bb.png" />
+		<MauiImage Include="Resources/Images/Pictures/b_logo.png" />
 
 		<MauiImage Include="Resources\Images\Icons\*" />
 		<!-- <MauiImage Include="Resources\Images\Icons\icons8_camera_50.png" /> -->

@@ -973,7 +973,6 @@ D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Micro
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.System.Power.winmd
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.System.winmd
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.Widgets.winmd
-D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\bb.scale-100.png
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\dotnet_bot.scale-100.png
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\icons8_camera_50.scale-100.png
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\maui_disney.scale-100.png
@@ -1078,7 +1077,6 @@ D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\mauif
 D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\f\FluentUI.cs
 D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\f\OpenSans-Regular.ttf
 D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\f\OpenSans-Semibold.ttf
-D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\bb.scale-100.png
 D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\dotnet_bot.scale-100.png
 D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\icons8_camera_50.scale-100.png
 D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\maui_disney.scale-100.png
@@ -1112,3 +1110,5 @@ D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\Multi
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\courses.json
 D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\updatecourses.json
 D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\MauiApp1.sourcelink.json
+D:\1204433_projec2\MauiApp1\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\b_logo.scale-100.png
+D:\1204433_projec2\MauiApp1\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\b_logo.scale-100.png

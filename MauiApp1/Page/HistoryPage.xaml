@@ -54,7 +54,7 @@
                                            Grid.Row="0"/>
                                     
                                     <Label Text="{Binding Action, StringFormat='การดำเนินการ: {0}'}"
-                                           FontSize="14"
+                                           FontSize="20"
                                            Grid.Column="0"
                                            Grid.Row="1"
                                            TextColor="#7F8C8D"/>

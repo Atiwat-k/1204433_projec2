@@ -7,7 +7,7 @@
              Title="LoginPage">
 
        <Grid>
-              <Image Source="bb.png"
+              <Image Source="b_logo.png"
                      Aspect="AspectFill">
 
               </Image>
@@ -26,32 +26,42 @@
                                    <Label Text="Login"
                                           TextColor="Black"
                                           Margin="0, 10"></Label>
+
                                    <Border StrokeShape="RoundRectangle 20"
                                            Margin="0, 10">
                                           <Entry
                                                  HorizontalTextAlignment="Center"
                                                  TextColor="Black"
-                                                 Text="{Binding Email}"></Entry>
+                                                 Text="{Binding Email}"
+                                                 Placeholder="Enter your email"
+                                                 PlaceholderColor="Gray"/>
                                    </Border>
 
                                    <Label Text="Password"
                                           TextColor="Black"
                                           Margin="0, 10"></Label>
+
                                    <Border StrokeShape="RoundRectangle 20">
                                           <Entry
                                                  HorizontalTextAlignment="Center"
                                                  IsPassword="True"
                                                  TextColor="Black"
-                                                 Text="{Binding Password}"></Entry>
+                                                 Text="{Binding Password}"
+                                                 Placeholder="Enter your password"
+                                                 PlaceholderColor="Gray"/>
                                    </Border>
+
                                    <Button Text="Login"
                                            WidthRequest="250"
                                            Margin="0, 10"
-                                           TextColor="Black"
+                                           TextColor="White"
                                            ContentLayout="Left, 10"
-                                           HeightRequest="30"
+                                           HeightRequest="50"
                                            Padding="0, 5"
-                                           Command="{Binding LoginCommand}"></Button>
+                                           Command="{Binding LoginCommand}"
+                                           BackgroundColor="#FF263F59"
+                                           CornerRadius="25"/>
+
                                    <FlexLayout Direction="Row"
                                                JustifyContent="SpaceBetween">
                                           <Label Text="Register">
@@ -60,12 +70,7 @@
                                                                               CommandParameter="register"></TapGestureRecognizer>
                                                  </Label.GestureRecognizers>
                                           </Label>
-                                          <!-- <Label Text="Forget Password"
-                                                 TextColor="Black ">
-                                                 <Label.GestureRecognizers>
-                                                        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"></TapGestureRecognizer>
-                                                 </Label.GestureRecognizers>
-                                          </Label> -->
+
                                    </FlexLayout>
 
 
