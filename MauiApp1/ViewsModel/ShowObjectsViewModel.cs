@@ -37,43 +37,48 @@ namespace MauiApp1.ViewModel
             _courseService = courseService;
         }
 
-        [RelayCommand]
-        public async Task LoadDataAsync()
+       [RelayCommand]
+public async Task LoadDataAsync(bool forceReload = true) // เปลี่ยนเป็น true เพื่อบังคับโหลดใหม่ทุกครั้ง
+{
+    IsLoading = true;
+    try
+    {
+        Debug.WriteLine("🔄 [LoadDataAsync] เริ่มโหลดข้อมูล...");
+
+        // Clear existing data
+        AllTerms.Clear();
+        DisplayedCourses.Clear();
+        
+        var student = await _studentService.GetStudentByIdAsync(UserId, forceReload);
+        if (student != null)
         {
-            IsLoading = true;
-            try
-            {
-                // Clear existing data
-                AllTerms.Clear();
-                DisplayedCourses.Clear();
-                
-                var student = await _studentService.GetStudentByIdAsync(UserId);
-                if (student != null)
-                {
-                    StudentProfile = student.Profile;
+            StudentProfile = student.Profile;
 
-                    // Collect all terms (current and previous)
-                    AllTerms.Add(student.CurrentTerm);
-                    foreach (var term in student.PreviousTerms)
-                    {
-                        AllTerms.Add(term);
-                    }
+            // Collect all terms (current and previous)
+            AllTerms.Add(student.CurrentTerm);
+            foreach (var term in student.PreviousTerms)
+            {
+                AllTerms.Add(term);
+            }
 
-                    // Set default to current term
-                    SelectedTerm = student.CurrentTerm;
-                    await UpdateDisplayedCourses();
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error loading data: {ex.Message}");
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            // Set default to current term
+            SelectedTerm = student.CurrentTerm;
+            await UpdateDisplayedCourses();
         }
-
+        else
+        {
+            Debug.WriteLine("❌ [LoadDataAsync] ไม่พบนักศึกษา");
+        }
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"❌ [LoadDataAsync] เกิดข้อผิดพลาด: {ex.Message}");
+    }
+    finally
+    {
+        IsLoading = false;
+    }
+}
         partial void OnSelectedTermChanged(Term value)
         {
             _ = UpdateDisplayedCourses();
@@ -86,6 +91,8 @@ namespace MauiApp1.ViewModel
                 try
                 {
                     IsLoading = true;
+                  
+
                     var courses = new ObservableCollection<EnrolledCourse>();
                     var courseList = await _courseService.LoadCoursesAsync();
 
@@ -102,11 +109,18 @@ namespace MauiApp1.ViewModel
                             });
                         }
                     }
-                    DisplayedCourses = courses;
+
+                    DisplayedCourses.Clear();
+                    foreach (var course in courses)
+                    {
+                        DisplayedCourses.Add(course);
+                    }
+
+                    Debug.WriteLine($"✅ [UpdateDisplayedCourses] โหลดสำเร็จ {DisplayedCourses.Count} รายวิชา");
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error updating courses: {ex.Message}");
+                    Debug.WriteLine($"❌ [UpdateDisplayedCourses] เกิดข้อผิดพลาด: {ex.Message}");
                 }
                 finally
                 {
@@ -124,7 +138,8 @@ namespace MauiApp1.ViewModel
         [RelayCommand]
         public async Task RefreshData()
         {
-            await LoadDataAsync();
+            Debug.WriteLine("🔄 [RefreshData] รีเฟรชข้อมูล...");
+            await LoadDataAsync(true);
         }
     }
 }

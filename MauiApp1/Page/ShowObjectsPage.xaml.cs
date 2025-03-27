@@ -27,15 +27,7 @@ namespace MauiApp1.Page
             }
         }
 
-        protected override async void OnAppearing()
-        {
-            base.OnAppearing();
-            if (!string.IsNullOrEmpty(UserId))
-            {
-                Debug.WriteLine("Page appearing - reloading data");
-                await ViewModel.LoadDataAsync();
-            }
-        }
+
 
         private async void OnUserIdReceived(string userId)
         {
@@ -50,12 +42,13 @@ namespace MauiApp1.Page
                 Debug.WriteLine("UserId is null or empty.");
             }
         }
-
         private async void OnButtonClicked(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(UserId))
             {
                 await Shell.Current.GoToAsync($"{nameof(AddCoursesPage)}?userId={UserId}");
+                // โหลดข้อมูลใหม่เมื่อกลับมาจากหน้าเพิ่มวิชา
+                await ViewModel.LoadDataAsync(true);
             }
             else
             {
@@ -68,23 +61,27 @@ namespace MauiApp1.Page
             if (!string.IsNullOrEmpty(UserId))
             {
                 await Shell.Current.GoToAsync($"{nameof(DeleteCoursesPage)}?userId={UserId}");
+                // โหลดข้อมูลใหม่เมื่อกลับมาจากหน้าลบวิชา
+                await ViewModel.LoadDataAsync(true);
             }
             else
             {
                 Debug.WriteLine("UserId is null or empty. Cannot navigate.");
             }
         }
-      private async void OnViewHistoryClicked(object sender, EventArgs e)
-{
-    if (!string.IsNullOrEmpty(UserId))
-    {
-        await Navigation.PushAsync(new HistoryPage(new HistoryViewModel(new HistoryService())) 
-        { 
-            UserId = UserId 
-        });
+        private async void OnViewHistoryClicked(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                await Navigation.PushAsync(new HistoryPage(new HistoryViewModel(new HistoryService()))
+                {
+                    UserId = UserId
+                });
+            }
+        }
     }
-}
-    }
+
+
 
 
 }
